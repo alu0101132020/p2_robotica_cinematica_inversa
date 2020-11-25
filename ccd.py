@@ -85,14 +85,15 @@ while (dist > EPSILON and abs(prev-dist) > EPSILON/100.):
   # Para cada combinación de articulaciones:
   for i in range(len(th)):
     # cálculo de la cinemática inversa:
+    j = len(th) - 1 - 1
+    
+    SR = O[j - 1]
+    xRel = SR[0] - O[j][0]
+    yRel = SR[1] - O[j][1]
     
     
     
-    
-    
-    
-    
-    
+    th[j] = th [j] + 20
     
     O[i+1] = cin_dir(th,a)
 
