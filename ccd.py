@@ -88,12 +88,15 @@ while (dist > EPSILON and abs(prev-dist) > EPSILON/100.):
     j = len(th) - 1 - 1
     
     SR = O[j - 1]
-    xRel = SR[0] - O[j][0]
-    yRel = SR[1] - O[j][1]
+    for miniSr in SR:
+      # O por algún motivo tiene elemntos enteros (1, 2 y 3) aparte de las coordenadas orígenes
+      print(miniSr, O[j])
+      xRel = miniSr[0] 
+      yRel = miniSr[1] #- O[j]
+      
     
     
-    
-    th[j] = th [j] + 20
+    # th[j] = th [j]
     
     O[i+1] = cin_dir(th,a)
 
