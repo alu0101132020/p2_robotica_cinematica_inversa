@@ -8,6 +8,7 @@
 
 import sys
 from math import *
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 import colorsys as cs
@@ -82,24 +83,20 @@ prev = 0.
 iteracion = 1
 while (dist > EPSILON and abs(prev-dist) > EPSILON/100.):
   prev = dist
-  # Para cada combinación de articulaciones:
-  for i in range(len(th)):
-    # cálculo de la cinemática inversa:
-    j = len(th) - 1 - 1
-    
-    SR = O[j - 1]
-    for miniSr in SR:
-      # O por algún motivo tiene elemntos enteros (1, 2 y 3) aparte de las coordenadas orígenes
-      print(miniSr, O[j])
-      xRel = miniSr[0] 
-      yRel = miniSr[1] #- O[j]
-      
-    
-    
-    # th[j] = th [j]
-    
-    O[i+1] = cin_dir(th,a)
 
+  for i in range(len(th)):
+    j = len(th) - i - 1
+
+    punto_final_robot = O[i][len(th)]
+    punto_referencia = O[i][j]
+    print(punto_final_robot, punto_referencia, objetivo)
+    alfa1 = atan2(objetivo[1] - punto_referencia[1], objetivo[0] - punto_referencia[0]) 
+    alfa2 = atan2(punto_final_robot[1]  - punto_referencia[1], punto_final_robot[0] - punto_referencia[0])
+    print(alfa1, alfa2)
+    th[j] += alfa1 - alfa2
+    
+    O[i + 1] = cin_dir(th,a)
+    
   dist = np.linalg.norm(np.subtract(objetivo,O[-1][-1]))
   print "\n- Iteracion " + str(iteracion) + ':'
   muestra_origenes(O[-1])
