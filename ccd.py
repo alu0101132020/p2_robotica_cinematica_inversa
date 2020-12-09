@@ -92,29 +92,48 @@ dist = float("inf")
 prev = 0.
 iteracion = 1
 while (dist > EPSILON and abs(prev-dist) > EPSILON/100.):
+  # Almacenamos la distancia para poder compararla en cada iteración y ver
+  # si el desplazamiento es menor al umbral (epsilon)
   prev = dist
 
+  # para cada desplazamiento (1 por articulación)
   for i in range(len(th)):
+    # Escogemos el siguiente elemento por el final
     j = len(th) - i - 1
+    # Comprobamos si es una articulación rotacional (0) o prismática (1)
+
+    # --- Caso articulación rotacional
     if (type_of_joint[j] == 0) :
+      # Obtenemos los 2 puntos para formar el triángulo y tener un sistema de referencias.
       punto_final_robot = O[i][len(th)]
       punto_referencia = O[i][j]
+      # Calculamos los ángulos desde el punto de referencia a el punto objetivo
+      # y el último punto del robot. Calculamos la diferencia.
       alfa1 = atan2(objetivo[1] - punto_referencia[1], objetivo[0] - punto_referencia[0]) 
       alfa2 = atan2(punto_final_robot[1]  - punto_referencia[1], punto_final_robot[0] - punto_referencia[0])
       theta = alfa1 - alfa2
+      # Movemos el ángulo ajustándonos a los valores umbrales.
       if (th[j] + theta <= delimitations_array[j][0]):
         th[j] = delimitations_array[j][0]
       elif (th[j] + theta >= delimitations_array[j][1]) :
         th[j] = delimitations_array[j][1]
       else:
         th[j] += theta
+    
+    # --- Caso articulación prismática
     else :
       summ_of_thetas = 0
+      # Sumamos los ángulos de todos los componentes anteriores para saber el ángulo
+      # en el que nos desplazamos
       for k in range(j) :
         summ_of_thetas += th[j]
       punto_final_robot = O[i][len(th)]
+      # Calculamos la diferencia entre el punto final y el punto final del robot.
       final_eof_x = objetivo[0] - punto_final_robot[0]
       final_eof_y = objetivo[1] - punto_final_robot[1]
+      # Aplicamos la fórmula dada en el PDF (que no acabo de entender pero funciona =^))
+      # y vemos si al recalcular la distancia nos salimos de los valores umbrales.
+      # Si no lo hacemos simplemente sumamos
       d = np.dot([cos(summ_of_thetas), sin(summ_of_thetas)], [final_eof_x, final_eof_y])
       if (a[j] + d <= delimitations_array[j][0]) :
         a[j] = delimitations_array[j][0]
