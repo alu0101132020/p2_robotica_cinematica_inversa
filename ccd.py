@@ -64,10 +64,16 @@ def cin_dir(th,a):
 th=[0.,0.,0.]
 a =[5.,5.,5.]
 radians = math.pi / 180
+# Array que almacena para cada articulación sus rangos mínimos y máximos ya sea de giro o de longitud.
 delimitations_array = [[-45 * radians , 45 * radians], [2, 10], [-45 * radians, 45 * radians]]
 # 0 para articulaciones rotacionales 1 para articulaciones prismáticas
 type_of_joint = [0, 1, 0] 
-L = sum(a) # variable para representación gráfica
+L = 0 # variable para representación gráfica
+for i in range(len(type_of_joint)) :
+  if type_of_joint[i] == 0 :
+    L += a[i]
+  else :
+    L += delimitations_array[i][1]
 EPSILON = .01
 
 plt.ion() # modo interactivo
