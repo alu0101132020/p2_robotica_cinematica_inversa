@@ -63,6 +63,10 @@ def cin_dir(th,a):
 # valores articulares arbitrarios para la cinemática directa inicial
 th=[0.,0.,0.]
 a =[5.,5.,5.]
+radians = math.pi / 180
+delimitations_array = [[-45 * radians , 45 * radians], [2, 10], [-45 * radians, 45 * radians]]
+# 0 para articulaciones rotacionales 1 para articulaciones prismáticas
+type_of_joint = [0, 1, 0] 
 L = sum(a) # variable para representación gráfica
 EPSILON = .01
 
@@ -86,14 +90,32 @@ while (dist > EPSILON and abs(prev-dist) > EPSILON/100.):
 
   for i in range(len(th)):
     j = len(th) - i - 1
-
-    punto_final_robot = O[i][len(th)]
-    punto_referencia = O[i][j]
-    print(punto_final_robot, punto_referencia, objetivo)
-    alfa1 = atan2(objetivo[1] - punto_referencia[1], objetivo[0] - punto_referencia[0]) 
-    alfa2 = atan2(punto_final_robot[1]  - punto_referencia[1], punto_final_robot[0] - punto_referencia[0])
-    print(alfa1, alfa2)
-    th[j] += alfa1 - alfa2
+    if (type_of_joint[j] == 0) :
+      punto_final_robot = O[i][len(th)]
+      punto_referencia = O[i][j]
+      alfa1 = atan2(objetivo[1] - punto_referencia[1], objetivo[0] - punto_referencia[0]) 
+      alfa2 = atan2(punto_final_robot[1]  - punto_referencia[1], punto_final_robot[0] - punto_referencia[0])
+      theta = alfa1 - alfa2
+      if (th[j] + theta <= delimitations_array[j][0]):
+        th[j] = delimitations_array[j][0]
+      elif (th[j] + theta >= delimitations_array[j][1]) :
+        th[j] = delimitations_array[j][1]
+      else:
+        th[j] += theta
+    else :
+      summ_of_thetas = 0
+      for k in range(j) :
+        summ_of_thetas += th[j]
+      punto_final_robot = O[i][len(th)]
+      final_eof_x = objetivo[0] - punto_final_robot[0]
+      final_eof_y = objetivo[1] - punto_final_robot[1]
+      d = np.dot([cos(summ_of_thetas), sin(summ_of_thetas)], [final_eof_x, final_eof_y])
+      if (a[j] + d <= delimitations_array[j][0]) :
+        a[j] = delimitations_array[j][0]
+      elif (a[j] + d >= delimitations_array[j][1]) :
+        a[j] = delimitations_array[j][1]
+      else :
+        a[j] += d
     
     O[i + 1] = cin_dir(th,a)
     
